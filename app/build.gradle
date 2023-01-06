@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -16,6 +17,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        buildConfigField "String", "WEATHER_API_KEY","\"${properties.getProperty("WEATHER_API_KEY")}"
     }
 
     buildTypes {
@@ -24,12 +29,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildTypes.each {
+        it.buildConfigField 'String', 'WEATHER_API_KEY', MyWeatherApiKey
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    buildFeatures{
+        viewBinding true
     }
 }
 
@@ -44,6 +55,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-fitness:21.1.0'
     implementation 'com.karumi:dexter:6.2.3'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.google.android.libraries.places:places:3.0.0'
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
 
 
     testImplementation 'junit:junit:4.13.2'
